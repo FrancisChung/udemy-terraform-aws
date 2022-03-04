@@ -44,3 +44,16 @@ resource "aws_vpc" "myvpc" {
 output "vpc_id" {
   value = aws_vpc.myvpc.id
 }
+
+variable "mytuple" {
+  type = tuple([string, number, string])
+  default = ["cat", 1, "dog"]
+}
+
+variable "myobject" {
+  type = object({name=string, port=lost(number)})
+  default = {
+    name = "Frank"
+    port = [22,25,80]
+  }
+}
