@@ -10,6 +10,6 @@ variable "VPCName" {
 resource "aws_vpc" "TerraformVPC" {
     cidr_block = "192.168.0.0/24"
     tags = {
-        name = var.VPCName
+        Name = var.VPCName
     }
 }
