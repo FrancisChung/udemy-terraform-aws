@@ -2,6 +2,16 @@ provider "aws" {
     region = "ap-southeast-2"
 }
 
+variable "ingressrules" {
+    type = list(number)
+    default = [80, 443]
+}
+
+variable "egressrules" {
+    type = list(number)
+    default = [80, 443, 25, 3306, 53, 8080]
+}
+
 resource "aws_instance" "ec2" {
     ami = "ami-089e8a52c00cede0b"
     instance_type = "t2.micro"
@@ -10,17 +20,27 @@ resource "aws_instance" "ec2" {
 
 resource "aws_security_group" "webtraffic" {
     name = "Allow HTTPS"
-    ingress {
-        from_port = 443
-        to_port = 443
-        protocol = "TCP"
-        cidr_blocks = ["0.0.0.0/0"]
+
+    dynamic "ingress" {
+        iterator = port
+        for_each = var.ingressrules
+        content {
+            from_port = port.value
+            to_port = port.value
+            protocol = "TCP"
+            cidr_blocks = ["0.0.0.0/0"]
+        }
     }
 
-    egress {
-        from_port = 443
-        to_port = 443
-        protocol = "TCP"
-        cidr_blocks = ["0.0.0.0/0"]
+    dynamic "egress" {
+        iterator = port
+        for_each = var.egressrules
+        content {
+            from_port = port.value
+            to_port = port.value
+            protocol = "TCP"
+            cidr_blocks = ["0.0.0.0/0"]
+        }
     }
+
 }
